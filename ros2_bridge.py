@@ -8,12 +8,12 @@ from rclpy.node import Node
 from sensor_msgs.msg import Imu
 import zmq
 
-ROBOT_NAME = "/a300_0002"
+ROBOT_NAME = "/robot_namespace"
 ROS1_IP = "192.168.131.5"
 ROS2_IP = "192.168.131.1"
 
 ROS2_ODOM_TOPIC = f"{ROBOT_NAME}/platform/odom"
-ROS2_ODOM_FILTERED_TOPIC = f"{ROBOT_NAME}/platform/odom_filtered"
+ROS2_ODOM_FILTERED_TOPIC = f"{ROBOT_NAME}/platform/odom/filtered"
 ROS2_IMU_TOPIC = f"{ROBOT_NAME}/sensors/imu_0/data"
 CMD_VEL_OUT_TOPIC = f"{ROBOT_NAME}/cmd_vel"
 
