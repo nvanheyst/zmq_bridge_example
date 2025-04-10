@@ -7,7 +7,7 @@ import rospy
 from sensor_msgs.msg import Imu
 import zmq
 
-ROBOT_NAME = "/a300_0002"
+ROBOT_NAME = "/robot_namespace"
 ROS1_IP = "192.168.131.5"
 ROS2_IP = "192.168.131.1"
 
