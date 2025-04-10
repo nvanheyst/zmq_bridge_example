@@ -28,7 +28,9 @@ Update ROBOT_NAME constant to the robot namespace ("/" can be used if there is n
 Update CMD_VEL_OUT_TOPIC in ros2_bridge to be whatever topic you're using to command in ros2 (will publish a TwistStamped)
 Update CMD_VEL_IN_TOPIC in ros1_bridge to be whatever ROS1 topic you're publishing to for command (Twist)
 
-You'll need the zmq bindings for Python, are sudo apt install python3-zmq on Ubuntu 24.04 and pip3 install pyzmq on Ubuntu 20.04.
+You'll need the zmq bindings for Python: 
+sudo apt install python3-zmq on Ubuntu 24.04
+pip3 install pyzmq on Ubuntu 20.04.
 
 ROS1 Node can be run on the 20.04/Noetic computer with python3 ros1_bridge.py  
 ROS2 Node can be run on the 24.04/Jazzy computer with python3 ros2_bridge.py  
