@@ -2,7 +2,8 @@
 
 **Description**
 
-This is a POC example for a simple bridge between ROS2 Humble and ROS2 Jazzy. This example template is setup for a ROS2 Humble Platform that could publish and subscribe to topics from a ROS2 Jazzy platform. Support for a ROS Noetic and ROS2 Jazzy bridge is offered as well: https://github.com/nvanheyst/zmq_bridge_example/tree/Noetic%26Jazzy
+This is a POC example demonstrating a simple bridge between ROS2 Humble and ROS2 Jazzy. The template is configured for a ROS2 Humble system to publish and subscribe to topics with a ROS2 Jazzy system. A ROS Noetic ↔ ROS2 Jazzy bridge is also available: [Noetic & Jazzy branch](https://github.com/nvanheyst/zmq_bridge_example/tree/Noetic%26Jazzy)
+
 
 This was tested with teleoperation over an ethernet connection. This could work with an autonomy stack and additional topics can be added as well. This hasn't been tested with images or point clouds just the topics shown below. 
 
