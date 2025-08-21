@@ -2,7 +2,7 @@
 
 **Description**
 
-This is a POC example demonstrating a simple bridge between ROS2 Humble and ROS2 Jazzy. The template is configured for a ROS2 Humble system to publish and subscribe to topics with a ROS2 Jazzy system. The setup is tested and instructions created assuming a ROS2 Humble system is controlling the ROS2 Jazzy system, but it's likely this works in reverse with little or no adjustment (although the naming will be confusing). 
+This is a POC example demonstrating a simple bridge between ROS2 Humble and ROS2 Jazzy. The template is configured for a ROS2 Humble system to publish and subscribe to topics with a ROS2 Jazzy system. The setup is tested and instructions created assuming a ROS2 Humble system is controlling the ROS2 Jazzy system. The Humble bridge assumes Twist messages, while the Jazzy bridge assumes TwistStamped. 
 
 A ROS Noetic ↔ ROS2 Jazzy bridge is also available: [Noetic & Jazzy branch](https://github.com/nvanheyst/zmq_bridge_example/tree/Noetic%26Jazzy)
 
