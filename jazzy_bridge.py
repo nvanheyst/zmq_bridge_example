@@ -102,16 +102,16 @@ class Ros2Bridge(Node):
 
         self.test_context = zmq.Context()
 
-        # Publisher socket for sending data to ROS1
+        # Publisher socket for sending data to Humble
         self.zmq_pub = self.test_context.socket(zmq.PUB)
         self.zmq_pub.bind(f"tcp://{JAZZY_}:5555")
 
-        # Subscriber socket for receiving commands from ROS1
+        # Subscriber socket for receiving commands from Humble
         self.zmq_sub = self.test_context.socket(zmq.SUB)
         self.zmq_sub.connect(f"tcp://{HUMBLE_}:5556")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
-        # ROS2 subscribers
+        # ROS2 Jazzy subscribers
         self.odom_sub = self.create_subscrtion(
             Odometry, ROS2_ODOM_TOPIC, self.odom_callback, 10)
 
@@ -121,7 +121,7 @@ class Ros2Bridge(Node):
         self.imu_sub = self.create_subscrtion(
             Imu, ROS2_IMU_TOPIC, self.imu_callback, 10)
 
-        # ROS2 publisher for received commands
+        # ROS2 Jazzy publisher for received commands
         self.cmd_vel_pub = self.create_publisher(
             TwistStamped, CMD_VEL_OUT_TOPIC, 10)
 
@@ -131,7 +131,7 @@ class Ros2Bridge(Node):
 
     def odom_callback(self, msg):
         self.get_logger().info(
-            f'Republishing odom to ROS1 (x: {round(msg.pose.pose.position.x, 2)}, y: {round(msg.pose.pose.position.y, 2)})')
+            f'Republishing odom to Humble (x: {round(msg.pose.pose.position.x, 2)}, y: {round(msg.pose.pose.position.y, 2)})')
         data = odomMsgToJson(msg, ROS2_ODOM_TOPIC)
         self.zmq_pub.send_string(json.dumps(data))
 
