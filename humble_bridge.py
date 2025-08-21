@@ -8,13 +8,13 @@ from sensor_msgs.msg import Imu
 import zmq
 
 ROBOT_NAME = "/robot_namespace"
-ROS1_IP = "192.168.131.5"
-ROS2_IP = "192.168.131.1"
+HUMBLE_IP = "192.168.131.5"
+JAZZY_IP = "192.168.131.1"
 
-ROS1_ODOM_OUT_TOPIC = "/ros2_odom_out"
-ROS1_ODOM_FILTERED_OUT_TOPIC = "/ros2_odom_filtered_out"
-ROS1_CMD_VEL_OUT_TOPIC = "/ros2_cmd_vel_out"
-ROS1_IMU_OUT_TOPIC = "/ros2_imu_data"
+HUMBLE_ODOM_OUT_TOPIC = "/ros2_odom_out"
+HUMBLE_ODOM_FILTERED_OUT_TOPIC = "/ros2_odom_filtered_out"
+HUMBLE_CMD_VEL_OUT_TOPIC = "/ros2_cmd_vel_out"
+HUMBLE_IMU_OUT_TOPIC = "/ros2_imu_data"
 
 CMD_VEL_IN_TOPIC = f"{ROBOT_NAME}/cmd_vel"
 
