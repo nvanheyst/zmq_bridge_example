@@ -2,7 +2,7 @@
 
 **Description**
 
-This is a POC example for a simple bridge between ROS Noetic and ROS2 Jazzy. This example template is setup for a ROS1 package that could publish and subscribe to topics from a ROS2 platform. This was tested with teleoperation over an ethernet connection. This could work with an autonomy stack and additional topics can be added as well. This hasn't been tested with images or point clouds just the topics shown below. 
+This is a POC example for a simple bridge between ROS Noetic and ROS2 Jazzy. This example template is setup for a ROS1 system that could publish and subscribe to topics from a ROS2 platform. In this setup the ROS Noetic system is controlling the ROS2 Jazzy system, but the template could be adjusted to work in reverse. This was tested with teleoperation over an ethernet connection. This could work with an autonomy stack and additional topics can be added as well. This hasn't been tested with images or point clouds just the topics shown below. 
 
 
 **Example Template**
