@@ -33,8 +33,9 @@ Update ROBOT_NAME constant to the robot namespace ("/" can be used if there is n
 Update CMD_VEL_OUT_TOPIC in jazzy_bridge to be whatever topic you're using to command in ROS2 Jazzy (will publish a TwistStamped)
 Update CMD_VEL_IN_TOPIC in humble_bridge to be whatever ROS2 Humble topic you're publishing to for command (Twist)
 
-You'll need the zmq bindings for Python: 
-sudo apt install python3-zmq on Ubuntu 22.04 and 24.04
+You'll need the zmq bindings for Python:
+
+$sudo apt install python3-zmq
 
 ROS2 Humble Node can be run on the 22.04 computer with python3 humble_bridge.py  
 ROS2 Jazzy Node can be run on the 24.04 computer with python3 jazzy_bridge.py  
