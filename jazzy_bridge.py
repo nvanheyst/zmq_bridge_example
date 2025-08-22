@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from geometry_msgs.msg import TwistStamped
 import json
-from nav_msgs.msg import Odometry
+import zmq
 import rclpy
 from rclpy.node import Node
+
+from geometry_msgs.msg import TwistStamped
+from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
-import zmq
 
 ROBOT_NAME = "/robot_namespace"
 HUMBLE_IP = "192.168.131.5"
