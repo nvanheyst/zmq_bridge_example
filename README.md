@@ -13,13 +13,13 @@ This was tested with teleoperation over an ethernet connection. This could work 
 **Example Template**
 
 Data from ROS2 Jazzy topics will be mapped to ROS2 Humble as follows:
-/robot_namespace/platform/odom -> /jazzy_odom_out (nav_msgs/Odometry)
+/robot_namespace/platform/odom -> /ros2_odom_out (nav_msgs/Odometry)
 
-/robot_namespace/platform/odom/filtered -> /jazzy_odom_filtered_out (nav_msgs/Odometry)
+/robot_namespace/platform/odom/filtered -> /ros2_odom_filtered_out (nav_msgs/Odometry)
 
-/robot_namespace/sensors/imu_0/data -> /jazzy_imu_data (sensor_msgs/Imu)
+/robot_namespace/sensors/imu_0/data -> /ros2_imu_data (sensor_msgs/Imu)
 
-/robot_namepace/platform/cmd_vel -> /jazzy_cmd_vel_out (For debugging)
+/robot_namepace/platform/cmd_vel -> /ros2_cmd_vel_out (For debugging)
 
 Data from ROS2 Humble topics will be mapped to ROS2 Jazzy as follows:
 
