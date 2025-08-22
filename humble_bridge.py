@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from geometry_msgs.msg import TwistStamped, Twist
 import json
-from nav_msgs.msg import Odometry
-import rospy
-from sensor_msgs.msg import Imu
 import zmq
+import rclpy
+from rclpy.node import Node
+
+from geometry_msgs.msg import Twist, TwistStamped
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
 
 ROBOT_NAME = "/robot_namespace"
 HUMBLE_IP = "192.168.131.5"
@@ -19,10 +21,11 @@ HUMBLE_IMU_OUT_TOPIC = "/ros2_imu_data"
 CMD_VEL_IN_TOPIC = f"{ROBOT_NAME}/cmd_vel"
 
 
+
 def jsonOdomMsgToRos(obj):
     msg = Odometry()
-    msg.header.stamp = rospy.Time(
-        obj['data']['header']['stamp']['sec'], obj['data']['header']['stamp']['nanosec'])
+    msg.header.stamp.sec = obj['data']['header']['stamp']['sec']
+    msg.header.stamp.nanosec = obj['data']['header']['stamp']['nanosec']
     msg.header.frame_id = obj['data']['header']['frame_id']
     msg.child_frame_id = obj['data']['child_frame_id']
     msg.pose.pose.position.x = obj['data']['pose']['pose']['position']['x']
@@ -43,8 +46,8 @@ def jsonOdomMsgToRos(obj):
 
 def jsonImuMsgToRos(obj):
     msg = Imu()
-    msg.header.stamp = rospy.Time(
-        obj['data']['header']['stamp']['sec'], obj['data']['header']['stamp']['nanosec'])
+    msg.header.stamp.sec = obj['data']['header']['stamp']['sec']
+    msg.header.stamp.nanosec = obj['data']['header']['stamp']['nanosec']
     msg.header.frame_id = obj['data']['header']['frame_id']
     msg.orientation.x = obj['data']['orientation']['x']
     msg.orientation.y = obj['data']['orientation']['y']
@@ -59,111 +62,90 @@ def jsonImuMsgToRos(obj):
     return msg
 
 
-def jsonCmdVelStampedMsgToRos(obj):
-    msg = TwistStamped()
-    msg.header.stamp = rospy.Time(
-        obj['data']['header']['stamp']['sec'], obj['data']['header']['stamp']['nanosec'])
-    msg.header.frame_id = obj['data']['header']['frame_id']
-    msg.twist.linear.x = obj['data']['linear']['x']
-    msg.twist.linear.y = obj['data']['linear']['y']
-    msg.twist.linear.z = obj['data']['linear']['z']
-    msg.twist.angular.x = obj['data']['angular']['x']
-    msg.twist.angular.y = obj['data']['angular']['y']
-    msg.twist.angular.z = obj['data']['angular']['z']
+def jsonCmdVelStampedMsgToTwist(obj):
+    """Convert Jazzy's TwistStamped JSON into plain Twist for Humble."""
+    msg = Twist()
+    msg.linear.x = obj['data']['linear']['x']
+    msg.linear.y = obj['data']['linear']['y']
+    msg.linear.z = obj['data']['linear']['z']
+    msg.angular.x = obj['data']['angular']['x']
+    msg.angular.y = obj['data']['angular']['y']
+    msg.angular.z = obj['data']['angular']['z']
     return msg
 
-
-def cmdVelMsgToJson(msg, topic):
-    data = {
-        'topic': topic,
-        'data': {
-            'linear': {
-                'x': msg.linear.x,
-                'y': msg.linear.y,
-                'z': msg.linear.z
-            },
-            'angular': {
-                'x': msg.angular.x,
-                'y': msg.angular.y,
-                'z': msg.angular.z
-            }
-        }
-    }
-    return data
-
-
-class Ros1Bridge:
+class Ros2Bridge(Node):
     def __init__(self):
-        rospy.init_node('ros1_bridge')
+        super().__init__('ros2_bridge')
 
-        # Initialize ZMQ context and sockets
+        # Initialize ZMQ
         self.context = zmq.Context()
 
-        # Subscriber socket for receiving from ROS2
+        # Subscriber socket (from Jazzy)
         self.zmq_sub = self.context.socket(zmq.SUB)
-        self.zmq_sub.connect(f"tcp://{ROS2_IP}:5555")
+        self.zmq_sub.connect(f"tcp://{JAZZY_IP}:5555")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
-        # Publisher socket for sending to ROS2
+        # Publisher socket (to Jazzy)
         self.zmq_pub = self.context.socket(zmq.PUB)
-        self.zmq_pub.bind(f"tcp://{ROS1_IP}:5556")
+        self.zmq_pub.bind(f"tcp://{HUMBLE_IP}:5556")
 
-        # ROS1 publishers
-        self.odom_pub = rospy.Publisher(
-            ROS1_ODOM_OUT_TOPIC, Odometry, queue_size=10)
-        self.odom_filtered_pub = rospy.Publisher(
-            ROS1_ODOM_FILTERED_OUT_TOPIC, Odometry, queue_size=10)
-        self.cmd_vel_pub = rospy.Publisher(
-            ROS1_CMD_VEL_OUT_TOPIC, TwistStamped, queue_size=10)
-        self.imu_pub = rospy.Publisher(ROS1_IMU_OUT_TOPIC, Imu, queue_size=10)
+        # ROS 2 publishers
+        self.odom_pub = self.create_publisher(Odometry, HUMBLE_ODOM_OUT_TOPIC, 10)
+        self.odom_filtered_pub = self.create_publisher(Odometry, HUMBLE_ODOM_FILTERED_OUT_TOPIC, 10)
+        self.cmd_vel_pub = self.create_publisher(Twist, HUMBLE_CMD_VEL_OUT_TOPIC, 10)
+        self.imu_pub = self.create_publisher(Imu, HUMBLE_IMU_OUT_TOPIC, 10)
 
-        # ROS1 subscribers
-        self.cmd_vel_sub = rospy.Subscriber(
-            CMD_VEL_IN_TOPIC, Twist, self.cmd_vel_callback)
+        # ROS 2 subscriber (cmd_vel Twist input)
+        self.cmd_vel_sub = self.create_subscription(
+            Twist, CMD_VEL_IN_TOPIC, self.cmd_vel_callback, 10)
 
-        rospy.loginfo('ROS1 bridge node initialized')
+        # Timer to poll ZMQ
+        self.create_timer(0.01, self.check_zmq_messages)
+
+        self.get_logger().info("Humble bridge node initialized")
 
     def cmd_vel_callback(self, msg):
         data = cmdVelMsgToJson(msg, CMD_VEL_IN_TOPIC)
-        print(f"publishing string: {data}")
+        self.get_logger().debug(f"Publishing cmd_vel JSON: {data}")
         self.zmq_pub.send_string(json.dumps(data))
 
-    def spin(self):
-        while not rospy.is_shutdown():
-            try:
-                message = self.zmq_sub.recv_string(flags=zmq.NOBLOCK)
-                data = json.loads(message)
-                if data['topic'] == f'{ROBOT_NAME}/platform/odom':
-                    msg = jsonOdomMsgToRos(data)
-                    self.odom_pub.publish(msg)
+    def check_zmq_messages(self):
+        try:
+            message = self.zmq_sub.recv_string(flags=zmq.NOBLOCK)
+            data = json.loads(message)
 
-                elif data['topic'] == f'{ROBOT_NAME}/platform/odom_filtered':
-                    msg = jsonOdomMsgToRos(data)
-                    self.odom_filtered_pub.publish(msg)
+            if data['topic'] == f'{ROBOT_NAME}/platform/odom':
+                msg = jsonOdomMsgToRos(data)
+                self.odom_pub.publish(msg)
 
-                elif data['topic'] == f'{ROBOT_NAME}/sensors/imu_0/data':
-                    msg = jsonImuMsgToRos(data)
-                    self.imu_pub.publish(msg)
+            elif data['topic'] == f'{ROBOT_NAME}/platform/odom/filtered':
+                msg = jsonOdomMsgToRos(data)
+                self.odom_filtered_pub.publish(msg)
 
-                elif data['topic'] == f'{ROBOT_NAME}/cmd_vel':
-                    msg = jsonCmdVelStampedMsgToRos(data)
-                    self.cmd_vel_pub.publish(msg)
+            elif data['topic'] == f'{ROBOT_NAME}/sensors/imu_0/data':
+                msg = jsonImuMsgToRos(data)
+                self.imu_pub.publish(msg)
 
-            except zmq.Again:
-                rospy.sleep(0.001)
-                continue
-            except Exception as e:
-                rospy.logerr(f'Error processing ZMQ message: {str(e)}')
-                rospy.sleep(0.001)
-                continue
+            elif data['topic'] == f'{ROBOT_NAME}/cmd_vel':
+                msg = jsonCmdVelStampedMsgToTwist(data)  # Convert TwistStamped → Twist
+                self.cmd_vel_pub.publish(msg)
+
+        except zmq.Again:
+            pass
+        except Exception as e:
+            self.get_logger().error(f"Error processing ZMQ message: {str(e)}")
 
 
 def main():
-    bridge = Ros1Bridge()
+    rclpy.init()
+    bridge = Ros2Bridge()
     try:
-        bridge.spin()
-    except rospy.ROSInterruptException:
+        rclpy.spin(bridge)
+    except KeyboardInterrupt:
         pass
+    finally:
+        bridge.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
