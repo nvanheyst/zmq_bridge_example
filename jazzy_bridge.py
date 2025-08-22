@@ -105,21 +105,21 @@ class Ros2Bridge(Node):
 
         # Publisher socket for sending data to Humble
         self.zmq_pub = self.test_context.socket(zmq.PUB)
-        self.zmq_pub.bind(f"tcp://{JAZZY_}:5555")
+        self.zmq_pub.bind(f"tcp://{JAZZY_IP}:5555")
 
         # Subscriber socket for receiving commands from Humble
         self.zmq_sub = self.test_context.socket(zmq.SUB)
-        self.zmq_sub.connect(f"tcp://{HUMBLE_}:5556")
+        self.zmq_sub.connect(f"tcp://{HUMBLE_IP}:5556")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
         # ROS2 Jazzy subscribers
-        self.odom_sub = self.create_subscrtion(
+        self.odom_sub = self.create_subscription(
             Odometry, ROS2_ODOM_TOPIC, self.odom_callback, 10)
 
-        self.odom_filtered_sub = self.create_subscrtion(
+        self.odom_filtered_sub = self.create_subscription(
             Odometry, ROS2_ODOM_FILTERED_TOPIC, self.odom_filtered_callback, 10)
 
-        self.imu_sub = self.create_subscrtion(
+        self.imu_sub = self.create_subscription(
             Imu, ROS2_IMU_TOPIC, self.imu_callback, 10)
 
         # ROS2 Jazzy publisher for received commands
