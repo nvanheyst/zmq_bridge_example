@@ -78,15 +78,15 @@ class Ros2Bridge(Node):
         super().__init__('ros2_bridge')
 
         # Initialize ZMQ
-        self.context = zmq.Context()
+        self.zmq_context = zmq.Context()
 
         # Subscriber socket (from Jazzy)
-        self.zmq_sub = self.context.socket(zmq.SUB)
+        self.zmq_sub = self.zmq_context.socket(zmq.SUB)
         self.zmq_sub.connect(f"tcp://{JAZZY_IP}:5555")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
         # Publisher socket (to Jazzy)
-        self.zmq_pub = self.context.socket(zmq.PUB)
+        self.zmq_pub = self.zmq_context.socket(zmq.PUB)
         self.zmq_pub.bind(f"tcp://{HUMBLE_IP}:5556")
 
         # ROS 2 publishers
