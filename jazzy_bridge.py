@@ -101,14 +101,14 @@ class Ros2Bridge(Node):
     def __init__(self):
         super().__init__('ros2_bridge')
 
-        self.test_context = zmq.Context()
+        self.zmq_context = zmq.Context()
 
         # Publisher socket for sending data to Humble
-        self.zmq_pub = self.test_context.socket(zmq.PUB)
+        self.zmq_pub = self.zmq_context.socket(zmq.PUB)
         self.zmq_pub.bind(f"tcp://{JAZZY_IP}:5555")
 
         # Subscriber socket for receiving commands from Humble
-        self.zmq_sub = self.test_context.socket(zmq.SUB)
+        self.zmq_sub = self.zmq_context.socket(zmq.SUB)
         self.zmq_sub.connect(f"tcp://{HUMBLE_IP}:5556")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
