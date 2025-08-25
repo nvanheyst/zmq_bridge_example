@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-from geometry_msgs.msg import TwistStamped, Twist
 import json
-from nav_msgs.msg import Odometry
-import rospy
-from sensor_msgs.msg import Imu
 import zmq
+import rospy
+
+from geometry_msgs.msg import TwistStamped, Twist
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
 
 ROBOT_NAME = "/robot_namespace"
 ROS1_IP = "192.168.131.5"
