@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
-from geometry_msgs.msg import TwistStamped
+
 import json
-from nav_msgs.msg import Odometry
+import zmq
 import rclpy
 from rclpy.node import Node
+
+from geometry_msgs.msg import TwistStamped
+from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
-import zmq
 
 ROBOT_NAME = "/robot_namespace"
 ROS1_IP = "192.168.131.5"
@@ -100,14 +102,14 @@ class Ros2Bridge(Node):
     def __init__(self):
         super().__init__('ros2_bridge')
 
-        self.test_context = zmq.Context()
+        self.zmq_context = zmq.Context()
 
         # Publisher socket for sending data to ROS1
-        self.zmq_pub = self.test_context.socket(zmq.PUB)
+        self.zmq_pub = self.zmq_context.socket(zmq.PUB)
         self.zmq_pub.bind(f"tcp://{ROS2_IP}:5555")
 
         # Subscriber socket for receiving commands from ROS1
-        self.zmq_sub = self.test_context.socket(zmq.SUB)
+        self.zmq_sub = self.zmq_context.socket(zmq.SUB)
         self.zmq_sub.connect(f"tcp://{ROS1_IP}:5556")
         self.zmq_sub.setsockopt_string(zmq.SUBSCRIBE, "")
 
